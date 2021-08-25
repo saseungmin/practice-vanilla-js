@@ -1,5 +1,7 @@
 import Counter from './Counter.js';
 
+import { setIncrease, setDecrease } from './utils.js';
+
 class App {
   constructor($app) {
     this.$app = $app;
@@ -12,32 +14,10 @@ class App {
       $app,
       initialState: this.state,
       onIncrease: (selectedId) => {
-        const nextState = this.state.map((nowState) => {
-          if (nowState.id === selectedId) {
-            return {
-              ...nowState,
-              value: nowState.value + 1,
-            };
-          }
-
-          return nowState;
-        });
-
-        this.setState(nextState);
+        this.setState(setIncrease(this.state, selectedId));
       },
       onDecrease: (selectedId) => {
-        const nextState = this.state.map((nowState) => {
-          if (nowState.id === selectedId) {
-            return {
-              ...nowState,
-              value: nowState.value - 1,
-            };
-          }
-
-          return nowState;
-        });
-
-        this.setState(nextState);
+        this.setState(setDecrease(this.state, selectedId));
       },
     });
   }
