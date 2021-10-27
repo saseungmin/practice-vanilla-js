@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 (() => {
@@ -19,7 +20,10 @@
         messageD: document.querySelector('#scroll-section-0 .main-message.d'),
       },
       values: {
-        messageAOpacity: [0, 1],
+        messageAOpacity: [0, 1, { start: 0.1, end: 0.2 }],
+        messageBOpacity: [0, 1, { start: 0.3, end: 0.4 }],
+        // messageCOpacity: [0, 1, { start: 0.3, end: 0.4 }],
+        // messageDOpacity: [0, 1, { start: 0.3, end: 0.4 }],
       },
     },
     {
@@ -72,15 +76,33 @@
 
   function calcValues(values, currentYOffset) {
     let rv;
+    const { scrollHeight } = sceneInfo[currentScene];
     // 현재 씬(스크롤 섹션)에서 스크롤 된 범위를 비율로 구하기
-    const scrollRatio = currentYOffset / sceneInfo[currentScene].scrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight;
 
-    // 비율을 Opacity의 범위에 따라 비율을 구하기
-    // 만약 Opacity가 200에서 900이라면 values[200, 900]
-    // values[0]을 더해주는 이유는 초기값 설정 때문. 스크롤 움직임에 따라 200 ~ 900으로 나타난다.
-    // 현재 씬(스크롤 섹션)에 스크롤이 움직일 때마다 해당 위치의 구할 수 있다.
-    // 이걸 Opacity 설정해준다.
-    rv = scrollRatio * (values[1] - values[0]) + values[0];
+    if (values.length === 3) {
+      // start ~ end 사이에 애니메이션 실행
+      const partScrollStart = values[2].start * scrollHeight;
+      const partScrollEnd = values[2].end * scrollHeight;
+      const partScrollHeight = partScrollEnd - partScrollStart;
+
+      if (currentYOffset >= partScrollStart && currentYOffset <= partScrollEnd) {
+        const partRatio = partScrollHeight * (values[1] - values[0]) + values[0];
+
+        rv = (currentYOffset - partScrollStart) / partRatio;
+      } else if (currentYOffset < partScrollStart) {
+        rv = values[0];
+      } else if (currentYOffset > partScrollEnd) {
+        rv = values[1];
+      }
+    } else {
+      // 비율을 Opacity의 범위에 따라 비율을 구하기
+      // 만약 Opacity가 200에서 900이라면 values[200, 900]
+      // values[0]을 더해주는 이유는 초기값 설정 때문. 스크롤 움직임에 따라 200 ~ 900으로 나타난다.
+      // 현재 씬(스크롤 섹션)에 스크롤이 움직일 때마다 해당 위치의 구할 수 있다.
+      // 이걸 Opacity 설정해준다.
+      rv = scrollRatio * (values[1] - values[0]) + values[0];
+    }
 
     return rv;
   }
