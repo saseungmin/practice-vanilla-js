@@ -69,9 +69,18 @@
     document.body.setAttribute('id', `show-scene-${currentScene}`);
   };
 
+  function calcValues(values, currentYOffset) {
+
+  }
+
   function playAnimation() {
+    const { objs } = sceneInfo[currentScene];
+    const { values } = sceneInfo[currentScene];
+    const currentYOffset = yOffset - prevScrollHeight;
+
     switch (currentScene) {
       case 0:
+        calcValues(values.messageAOpacity, currentYOffset);
         break;
       case 1:
         break;
