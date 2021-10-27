@@ -70,7 +70,18 @@
   };
 
   function calcValues(values, currentYOffset) {
+    let rv;
+    // 현재 씬(스크롤 섹션)에서 스크롤 된 범위를 비율로 구하기
+    const scrollRatio = currentYOffset / sceneInfo[currentScene].scrollHeight;
 
+    // 비율을 Opacity의 범위에 따라 비율을 구하기
+    // 만약 Opacity가 200에서 900이라면 values[200, 900]
+    // values[0]을 더해주는 이유는 초기값 설정 때문. 스크롤 움직임에 따라 200 ~ 900으로 나타난다.
+    // 현재 씬(스크롤 섹션)에 스크롤이 움직일 때마다 해당 위치의 구할 수 있다.
+    // 이걸 Opacity 설정해준다.
+    rv = scrollRatio * (values[1] - values[0]) + values[0];
+
+    return rv;
   }
 
   function playAnimation() {
@@ -80,7 +91,9 @@
 
     switch (currentScene) {
       case 0:
-        calcValues(values.messageAOpacity, currentYOffset);
+        const opacityResult = calcValues(values.messageAOpacity, currentYOffset);
+
+        objs.messageA.style.opacity = opacityResult;
         break;
       case 1:
         break;
