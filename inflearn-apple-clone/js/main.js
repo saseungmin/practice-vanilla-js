@@ -20,8 +20,12 @@
         messageD: document.querySelector('#scroll-section-0 .main-message.d'),
       },
       values: {
-        messageAOpacity: [0, 1, { start: 0.1, end: 0.2 }],
-        messageBOpacity: [0, 1, { start: 0.3, end: 0.4 }],
+        messageAOpacityIn: [0, 1, { start: 0.1, end: 0.2 }],
+        messageATranslateYIn: [20, 0, { start: 0.1, end: 0.2 }],
+        // messageBOpacityIn: [0, 1, { start: 0.3, end: 0.4 }],
+        messageAOpacityOut: [1, 0, { start: 0.25, end: 0.3 }],
+        messageATranslateYOut: [0, -20, { start: 0.25, end: 0.3 }],
+        // messageBOpacityOut: [0, 1, { start: 0.3, end: 0.4 }],
         // messageCOpacity: [0, 1, { start: 0.3, end: 0.4 }],
         // messageDOpacity: [0, 1, { start: 0.3, end: 0.4 }],
       },
@@ -87,9 +91,7 @@
       const partScrollHeight = partScrollEnd - partScrollStart;
 
       if (currentYOffset >= partScrollStart && currentYOffset <= partScrollEnd) {
-        const partRatio = partScrollHeight * (values[1] - values[0]) + values[0];
-
-        rv = (currentYOffset - partScrollStart) / partRatio;
+        rv = (currentYOffset - partScrollStart) / partScrollHeight * (values[1] - values[0]) + values[0];
       } else if (currentYOffset < partScrollStart) {
         rv = values[0];
       } else if (currentYOffset > partScrollEnd) {
@@ -108,15 +110,23 @@
   }
 
   function playAnimation() {
-    const { objs } = sceneInfo[currentScene];
-    const { values } = sceneInfo[currentScene];
+    const { objs, values, scrollHeight } = sceneInfo[currentScene];
+    // 현재 씬의 yOffset: yOffset - 이미 지나간 스크롤 높이
     const currentYOffset = yOffset - prevScrollHeight;
+    // currentYOffset / 현재 씬의 scrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight;
 
     switch (currentScene) {
       case 0:
-        const opacityResult = calcValues(values.messageAOpacity, currentYOffset);
-
-        objs.messageA.style.opacity = opacityResult;
+        if (scrollRatio <= 0.22) {
+          // fade in
+          objs.messageA.style.opacity = calcValues(values.messageAOpacityIn, currentYOffset);
+          objs.messageA.style.transform = `translateY(${calcValues(values.messageATranslateYIn, currentYOffset)}%)`;
+        } else {
+          // fade out
+          objs.messageA.style.opacity = calcValues(values.messageAOpacityOut, currentYOffset);
+          objs.messageA.style.transform = `translateY(${calcValues(values.messageATranslateYOut, currentYOffset)}%)`;
+        }
         break;
       case 1:
         break;
