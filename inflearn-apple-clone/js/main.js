@@ -41,10 +41,25 @@
   ];
 
   const setLayout = () => {
+    // 각 스크롤 섹션 높이 세팅
     sceneInfo.forEach((scene) => {
       scene.scrollHeight = scene.heightNum * window.innerHeight;
       scene.objs.container.style.height = `${scene.scrollHeight}px`;
     });
+
+    yOffset = window.pageYOffset;
+    let totalScrollHeight = 0;
+
+    for (let i = 0; i < sceneInfo.length; i++) {
+      totalScrollHeight += sceneInfo[i].scrollHeight;
+
+      if (totalScrollHeight >= yOffset) {
+        currentScene = i;
+        break;
+      }
+    }
+
+    document.body.setAttribute('id', `show-scene-${currentScene}`);
   };
 
   function scrollLoop() {
@@ -56,6 +71,7 @@
 
     if (yOffset > prevScrollHeight + sceneInfo[currentScene].scrollHeight) {
       currentScene++;
+      document.body.setAttribute('id', `show-scene-${currentScene}`);
     }
 
     if (yOffset < prevScrollHeight) {
@@ -64,6 +80,7 @@
       }
 
       currentScene--;
+      document.body.setAttribute('id', `show-scene-${currentScene}`);
     }
   }
 
@@ -72,6 +89,5 @@
     yOffset = window.pageYOffset;
     scrollLoop();
   });
-
-  setLayout();
+  window.addEventListener('load', setLayout);
 })();
