@@ -59,7 +59,12 @@
   const setLayout = () => {
     // 각 스크롤 섹션 높이 세팅
     sceneInfo.forEach((scene) => {
-      scene.scrollHeight = scene.heightNum * window.innerHeight;
+      if (scene.type === 'sticky') {
+        scene.scrollHeight = scene.heightNum * window.innerHeight;
+      } else if (scene.type === 'normal') {
+        scene.scrollHeight = scene.objs.container.offsetHeight;
+      }
+
       scene.objs.container.style.height = `${scene.scrollHeight}px`;
     });
 
@@ -133,6 +138,8 @@
       case 2:
         break;
       case 3:
+        break;
+      default:
         break;
     }
   }
